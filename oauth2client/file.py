@@ -31,6 +31,8 @@ __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 class CredentialsFileSymbolicLinkError(Exception):
     """Credentials files must not be symbolic links."""
 
+class CredentialsFileDoesNotExist(Exception):
+    """Credentials files should exist."""
 
 class Storage(BaseStorage):
     """Store and retrieve a single credential to and from a file."""
@@ -43,6 +45,9 @@ class Storage(BaseStorage):
         if os.path.islink(self._filename):
             raise CredentialsFileSymbolicLinkError(
                 'File: %s is a symbolic link.' % self._filename)
+        if not os.path.exists(self._filename):
+            raise CredentialsFileDoesNotExist(
+                'Cannot locate file: %s' % self._filename)
 
     def acquire_lock(self):
         """Acquires any lock necessary to access this Storage.
